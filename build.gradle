@@ -18,11 +18,11 @@ buildscript {
     if (project.hasProperty("bootstrap")) {
         ext.compilerVersion = '1.2-SNAPSHOT'
         ext.librariesVersion = '1.2-SNAPSHOT'
-        ext.serializationPluginVersion = '0.4-SNAPSHOT'
+        ext.serializationPluginVersion = '0.4.2-SNAPSHOT'
     } else {
-        ext.compilerVersion = '1.2.10'
-        ext.librariesVersion = '1.2.10'
-        ext.serializationPluginVersion = '0.4'
+        ext.compilerVersion = '1.2.30'
+        ext.librariesVersion = '1.2.30'
+        ext.serializationPluginVersion = '0.4.2'
     }
     ext.eapChannel = 'https://dl.bintray.com/kotlin/kotlin-eap'
     ext.serializationRepo = 'https://kotlin.bintray.com/kotlinx'
@@ -59,7 +59,7 @@ ext {
 
 allprojects {
     group 'org.jetbrains.kotlinx'
-    version '0.4'
+    version '0.4.2'
 
     repositories {
         jcenter()
@@ -88,10 +88,12 @@ subprojects {
         task sourceJar(type: Jar, dependsOn: classes) {
             classifier 'sources'
             from sourceSets.main.kotlin
-            duplicatesStrategy = "exclude"
-            def platformSrc = sourceSets.main.kotlin
-            def commonSrc = project(':common').sourceSets.main.kotlin
-            from (platformSrc + commonSrc)
+            if (project.name == "jvm" || project.name == "js") {
+                duplicatesStrategy = "exclude"
+                def platformSrc = sourceSets.main.kotlin
+                def commonSrc = project(':common').sourceSets.main.kotlin
+                from(platformSrc + commonSrc)
+            }
         }
     }
 
