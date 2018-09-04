@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 JetBrains s.r.o.
+ * Copyright 2018 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,17 @@ package kotlinx.serialization
 import kotlin.reflect.KClass
 
 @Suppress("UNCHECKED_CAST")
-actual fun <T: Any> KClass<T>.serializer(): KSerializer<T> = this.js.asDynamic().Companion.serializer() as? KSerializer<T>
-        ?: throw SerializationException("Can't locate default serializer for class $this")
+actual fun <T: Any> KClass<T>.serializer(): KSerializer<T> = this.js.asDynamic().Companion?.serializer() as? KSerializer<T>
+        ?: throw SerializationException("Can't locate default serializer for $this")
 
+@Suppress("UNUSED_VARIABLE") // KT-23633
 actual fun String.toUtf8Bytes(): ByteArray {
     val s = this
-    val blck = js("unescape(encodeURIComponent(s))") // contains only chars that fit to byte
-    return (blck as String).toList().map { it.toByte() }.toByteArray()
+    val block = js("unescape(encodeURIComponent(s))") // contains only chars that fit to byte
+    return (block as String).toList().map { it.toByte() }.toByteArray()
 }
 
+@Suppress("UNUSED_VARIABLE") // KT-23633
 actual fun stringFromUtf8Bytes(bytes: ByteArray): String {
     val s = bytes.map { (it.toInt() and 0xFF).toChar() }.joinToString(separator = "") // wide uint8 to char
     val ans = js("decodeURIComponent(escape(s))")
